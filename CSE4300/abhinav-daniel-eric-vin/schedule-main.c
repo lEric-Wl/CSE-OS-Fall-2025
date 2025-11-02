@@ -5,7 +5,7 @@
 void scheduleMain(struct process **procArray, int procArraySize, int maxTimesteps) {
 
     //create arrays for each queue level
-    struct process **RRQueue = malloc(procArraySize * sizeof(int*));
+    struct process **RRQueue = malloc(procArraySize * sizeof(int*)); //set all to nullptr
     struct process **STCFQueue = malloc(procArraySize * sizeof(int*));
     struct process **FIFOQueue = malloc(procArraySize * sizeof(int*));
     struct process **SJFQueue = malloc(procArraySize * sizeof(int*));
