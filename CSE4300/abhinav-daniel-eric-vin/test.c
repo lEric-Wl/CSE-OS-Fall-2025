@@ -1,6 +1,8 @@
 #include "process.h"
 #include "schedule-main.c"
 
+#include <stdlib.h>
+
 void testA(){
     struct process *processA = (struct process*)malloc(sizeof(struct process));
     struct process *processB = (struct process*)malloc(sizeof(struct process));
@@ -20,6 +22,6 @@ void testA(){
 
     struct process *processes[] = {processA, processB, processC};
            
-    schedule_main(processes, 10); //The second variable being max time per priority queue
+    scheduleMain(processes, 3, 10); //The second variable being the array size, and third being the max time steps
 
 }
