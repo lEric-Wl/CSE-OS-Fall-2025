@@ -10,12 +10,4 @@ struct process{
 };
 
 
-
-
-
-
-
-
-
-
 #endif
