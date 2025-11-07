@@ -13,10 +13,9 @@ void rr(struct process **procArray, int *arrayIdx, int globalTime){
     printf("turn at time %d: %s     ", globalTime, procArray[turn]->name);
     
     procArray[turn] -> remainingTime--;   
-    printf("Process remaining time: %d\n", procArray[turn] -> remainingTime);
+    printf("Process remaining time: %d  Used Round Robin\n", procArray[turn] -> remainingTime);
 
     if(procArray[turn] -> remainingTime <= 0){
-        printf("%s finished at time %d\n", procArray[turn]->name, globalTime+1);
         procArray[turn] -> finishTime = globalTime+1;
         
         for(int i = turn + 1; i < (*arrayIdx); i++){
@@ -25,7 +24,6 @@ void rr(struct process **procArray, int *arrayIdx, int globalTime){
 
         (*arrayIdx)--;
         tq = timeQuantum;
-        counter--;
     }
     else{
         tq --;
