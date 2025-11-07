@@ -21,7 +21,7 @@ void fifo(struct process **FIFOQueue, int* queueptr, int globalTime){
         for(int i=0; i<*queueptr-1; i++) {
             FIFOQueue[i] = FIFOQueue[i+1]; //shift queue down
         }
+        (*queueptr)--;
     }
-    (*queueptr)--;
 
 }
