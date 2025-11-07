@@ -4,6 +4,10 @@
 #include "fifo-schedulemain.h"
 #include <string.h>
 
+
+// compile command
+// gcc test-fifo-test.c fifo-schedulemain.c fifo.c
+
 int main(void) {
 
     //create array of processes
