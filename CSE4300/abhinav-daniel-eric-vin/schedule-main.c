@@ -1,6 +1,10 @@
 #include "process.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "fifo.h"
+#include "rr.h"
+#include "srtrf.h"
+#include "sjf.h"
 
 int scheduleMain(struct process **procArray, int procArraySize, int maxTimesteps) {
 
