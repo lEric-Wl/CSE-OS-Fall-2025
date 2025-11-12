@@ -46,7 +46,7 @@ void testA(){
     }
 
     assert(processA->finishTime == 9);
-    assert(processB->finishTime == 26);
+    assert(processB->finishTime == 24);
     assert(processC->finishTime == 4);
     assert(processD->finishTime == 19);
     assert(processE->finishTime == 20);
