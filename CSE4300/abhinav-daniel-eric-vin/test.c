@@ -38,6 +38,9 @@ void testA(){
 
     scheduleMain(processes, 15, 100);
 
+    for(int i = 0; i < 15; i++) {
+        printf("%s finished at time %d\n", processes[i]->name, processes[i]->finishTime);
+    }
     /*
     assert(processA->finishTime == 5);
     assert(processB->finishTime == 26);
