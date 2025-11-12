@@ -2,6 +2,7 @@
 #include "schedule-main.h"
 #include <string.h>
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -43,23 +44,23 @@ void testA(){
     for(int i = 0; i < 15; i++) {
         printf("%s finished at time %d\n", processes[i]->name, processes[i]->finishTime);
     }
-    /*
+
     assert(processA->finishTime == 9);
     assert(processB->finishTime == 26);
     assert(processC->finishTime == 4);
     assert(processD->finishTime == 19);
     assert(processE->finishTime == 20);
-    assert(processF->finishTime == TODO);
-    assert(processG->finishTime == TODO);
-    assert(processH->finishTime == TODO);
-    assert(processI->finishTime == TODO);
-    assert(processJ->finishTime == TODO);
-    assert(processK->finishTime == TODO);
-    assert(processL->finishTime == TODO);
-    assert(processM->finishTime == TODO);
-    assert(processN->finishTime == TODO);
-    assert(processO->finishTime == TODO);
-    */
+    assert(processF->finishTime == 89);
+    assert(processG->finishTime == 38);
+    assert(processH->finishTime == 45);
+    assert(processI->finishTime == 36);
+    assert(processJ->finishTime == 48);
+    assert(processK->finishTime == 50);
+    assert(processL->finishTime == 68);
+    assert(processM->finishTime == 67);
+    assert(processN->finishTime == 86);
+    assert(processO->finishTime == 81);
+
 
     free(processA);
     free(processB);
