@@ -262,7 +262,7 @@ static void fprint_core_line(FILE* fp, int core_idx, const int* lane, int len) {
     for (int t = 0; t < len; ++t) {
         if (t) fprintf(fp, ", ");
         int tid = lane ? lane[t] : -1;
-        if (tid < 0) fprintf(fp, "WAITING");
+        if (tid < 0) fprintf(fp, "IDLE");
         else         fprintf(fp, "T%d", tid);
     }
     fprintf(fp, "]\n");

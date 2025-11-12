@@ -2,7 +2,7 @@
 #include "dispatch.h"
 
 // max simulation ticks
-#define MAX_TICKS 10000
+#define MAX_TICKS 50000
 
 /* make a new thread object */
 static Thread* make_thread(int tid, int arrival, int burst) {
@@ -108,6 +108,11 @@ int main(void) {
     Queue workload;
     workload_init(&workload);
 
+    // large work load simulation
+    // for (int i = 1; i < 2000; i++) {
+    //     workload_add(&workload, i, rnd(0, 300), rnd(0, 30));
+    // }
+
     workload_add(&workload, 1, 0, 5);
     workload_add(&workload, 2, 0, 3);
     workload_add(&workload, 3, 2, 6);
@@ -121,7 +126,7 @@ int main(void) {
 
     /* cpu init and n cores */
     CPU cpu;
-    cpu_init(&cpu, 1);
+    cpu_init(&cpu, 4);
     /* run_trace[c][t] = tid at tick t for core c, or -1 if idle */
     int **run_trace = NULL;
     int ncores_for_trace = cpu.ncores;
@@ -156,7 +161,7 @@ int main(void) {
     DispatchFn schedule = dispatch_get(algo);
 
     /* INTERRUPT CONFIGURATION*/
-    InterruptConfig intr = {.enable_random = 1, .pct_io = 10, .io_min = 2, .io_max = 6};
+    InterruptConfig intr = {.enable_random = 0, .pct_io = 10, .io_min = 2, .io_max = 6};
     srand(42);
     log_interrupts_config(&log, intr.enable_random, intr.pct_io, intr.io_min, intr.io_max);
 

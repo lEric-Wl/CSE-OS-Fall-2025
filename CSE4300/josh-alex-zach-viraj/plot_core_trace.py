@@ -11,9 +11,13 @@ Core 1: [T2, T2, T2, T1, T1, T1, T1]
 
 import sys
 import re
+import math
+import random
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
+from matplotlib import ticker
+from matplotlib import ticker, colors as mcolors
 
 def parse_line(line):
     """
@@ -79,31 +83,48 @@ def read_timelines(path):
                 cores[label] = seq
     return cores
 
-def plot_timelines(cores, title="CPU Run Timeline"):
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import Patch
+def plot_timelines(cores, title="CPU Run Timeline", seed=None):
+    rng = random.Random(seed)
 
-    # gather unique task names
-    tasks = []
-    for seq in cores.values():
-        for t in seq:
-            if t not in tasks:
-                tasks.append(t)
-
-    cmap = plt.cm.get_cmap("tab20", max(20, len(tasks)))
-    color_map = {t: cmap(i % cmap.N) for i, t in enumerate(tasks)}
-
-    # constrained_layout helps prevent overlaps automatically
-    fig, ax = plt.subplots(
-        figsize=(12, 0.8 + 0.7 * max(1, len(cores))),
-        constrained_layout=True
-    )
-    lane_height = 0.6
-    lane_gap = 0.2
-    yticks, ylabels = [], []
-
+    # --- Gather basics ---
+    ncores = len(cores)
     max_len = max((len(seq) for seq in cores.values()), default=0)
 
+    # Normalize tokens: treat 'IDLE' or '-' as a single idle token
+    IDLE = "IDLE"
+    norm_cores = OrderedDict()
+    all_tasks = set()
+    for label, seq in cores.items():
+        norm = []
+        for tok in seq:
+            t = tok.upper()
+            if t == "-" or t == "IDLE":
+                norm.append(IDLE)
+            else:
+                norm.append(t)
+                all_tasks.add(t)
+        norm_cores[label] = norm
+
+    # --- Color map per TASK (legendable), not per span ---
+    # Idle is a fixed gray, not in legend
+    task_colors = {}
+    for t in sorted(all_tasks, key=lambda x: (x[0] != 'T', x)):  # T1, T2, ... first
+        # reasonable vivid but distinct colors
+        h = rng.random()
+        s = 0.65 + 0.25 * rng.random()
+        v = 0.85 + 0.15 * rng.random()
+        task_colors[t] = mcolors.hsv_to_rgb((h, s, v))
+    idle_color = (0.75, 0.75, 0.75)
+
+    # Figure size scales with run length and core count
+    width  = min(18, max(8, 6 + math.log10(max(10, max_len)) * 4))
+    height = min(16, max(3, 0.6 * ncores))
+
+    fig, ax = plt.subplots(figsize=(width, height))
+    lane_h, lane_gap = 0.6, 0.2
+    yticks, ylabels = [], []
+
+    # Compress consecutive equal tokens for efficient plotting
     def compress_runs(seq):
         if not seq:
             return []
@@ -117,30 +138,52 @@ def plot_timelines(cores, title="CPU Run Timeline"):
         spans.append((cur, start, length))
         return spans
 
-    for idx, (label, seq) in enumerate(cores.items()):
+    # Draw lanes
+    for idx, (label, seq) in enumerate(norm_cores.items()):
         spans = compress_runs(seq)
-        ybase = idx * (lane_height + lane_gap)
+        ybase = idx * (lane_h + lane_gap)
         for task, start, length in spans:
-            ax.broken_barh([(start, length)], (ybase, lane_height),
-                           facecolors=color_map[task], edgecolors="none")
-        yticks.append(ybase + lane_height / 2)
+            color = idle_color if task == IDLE else task_colors.get(task, idle_color)
+            ax.broken_barh([(start, length)], (ybase, lane_h),
+                           facecolors=color, edgecolors="none")
+        yticks.append(ybase + lane_h / 2)
         ylabels.append(label)
 
-    ax.set_ylim(0, len(cores) * (lane_height + lane_gap))
+    ax.set_ylim(0, ncores * (lane_h + lane_gap))
     ax.set_xlim(0, max_len)
-    ax.set_xlabel("Tick")
     ax.set_yticks(yticks)
     ax.set_yticklabels(ylabels)
+    ax.set_xlabel("Tick")
     ax.set_title(title)
-    ax.grid(True, axis="x", linestyle=":", linewidth=0.8)
-    ax.set_xticks(range(0, max_len + 1))
 
-    # put legend above the axes so it cannot collide with the x label
-    handles = [Patch(facecolor=color_map[t], label=t) for t in tasks]
-    ax.legend(handles=handles, title="Task",
+    # --- Conditional axes/legend behavior ---
+    SMALL_THRESHOLD = 200
+    if max_len <= SMALL_THRESHOLD:
+        # Show readable ticks (<= ~20 major ticks) and a legend
+        step = max(1, max_len // 20)  # ~20 major ticks or fewer
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(base=step))
+        ax.xaxis.set_minor_locator(ticker.NullLocator())
+        ax.grid(True, axis="x", linestyle=":", linewidth=0.8)
+
+        # Legend per TASK (exclude IDLE)
+        legend_handles = [
+            Patch(facecolor=task_colors[t], edgecolor="none", label=t)
+            for t in sorted(all_tasks, key=lambda x: (x[0] != 'T', x))
+        ]
+        if legend_handles:
+            ax.legend(handles=legend_handles, title="Task",
             loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False)
+    else:
+        # Large run: no x ticks, no legend, minimal grid
+        ax.xaxis.set_major_locator(ticker.NullLocator())
+        ax.xaxis.set_minor_locator(ticker.NullLocator())
+        ax.grid(False, axis="x")
 
+    plt.tight_layout()
     plt.show()
+
+
+
 
 def main():
     cores = read_timelines("core_trace.txt")  # fixed file name
