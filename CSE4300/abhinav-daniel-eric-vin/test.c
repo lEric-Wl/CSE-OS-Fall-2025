@@ -1,5 +1,6 @@
 #include "process.h"
 #include "schedule-main.h"
+#include <string.h>
 
 #include <stdlib.h>
 
@@ -39,7 +40,7 @@ void testA(){
 
     /*
     assert(processA->finishTime == 5);
-    assert(processB->finishTime == TODO);
+    assert(processB->finishTime == 26);
     assert(processC->finishTime == TODO);
     assert(processD->finishTime == TODO);
     assert(processE->finishTime == TODO);
