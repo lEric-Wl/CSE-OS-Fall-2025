@@ -1,8 +1,8 @@
 #include <vector>
 #include <cstdint>
 
-#ifndef MEMORYMANAGER
-#define MEMORYMANAGER
+#ifndef MEMORYMANAGER_H
+#define MEMORYMANAGER_H
 
 struct pageTableEntry {
     bool validBit = false;
@@ -72,8 +72,8 @@ class MemoryManager {
         // delete a page table entry and free its memory/disk usage
         void deletePageTableEntry(int virtualAddress);
 
-        // print stats for a page table entry to std::cout
-        void printPageTableEntry(int virtualPageNumber);
+        // print stats for a page table entry at an address to std::cout
+        void printPageTableEntry(int virtualAddress);
 };
 
 #endif
